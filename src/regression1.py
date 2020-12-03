@@ -10,7 +10,6 @@ from commonTorch import RegressionNet,optimizerTorch,lossFunction,preparDataSet
 #Optimizer: https://pytorch.org/docs/stable/optim.html
 #Loss functions: https://pytorch.org/docs/stable/nn.html#loss-functions
     
-
 def predict(net):
     x = torch.tensor([3.0]) #torch.tensor([4],dtype=torch.float)
     pred = net(x)

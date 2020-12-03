@@ -24,8 +24,6 @@ def main():
     #testLayers()
     X,y = preparDataSet(gamma=0.1)
     net = RegressionNet(hidden=50)
-            
-    ymin = float(torch.min(y))+1 #
     
     optimizer = optimizerTorch(net.parameters(), lr = 1e-2)
     lossFuc = lossFunction()
@@ -48,14 +46,14 @@ def main():
         # plot and show learning process
         plt.cla()
         ax.set_title('Regression Analysis', fontsize=12)
-        ax.set_xlabel('Independent variable', fontsize=10)
-        ax.set_ylabel('Dependent variable', fontsize=10)
+        ax.set_xlabel('X /Feature /Independent variable', fontsize=10)
+        ax.set_ylabel('Y /Label /Dependent variable', fontsize=10)
         #ax.set_xlim(-1.05, 1.5)
         #ax.set_ylim(-0.25, 1.25)
         ax.scatter(X.data.numpy(), y.data.numpy(), color = "orange")
         ax.plot(X.data.numpy(), pred.data.numpy(), 'g-', lw=3)
-        ax.text(2.2, ymin-1, 'Epoch = %d' % epoch, fontdict={'size': 10, 'color':  'red'})
-        ax.text(2.2, ymin, 'Loss = %.4f' % loss.data.numpy(), fontdict={'size': 10, 'color':  'red'})
+        ax.text(0.75, 0.16, 'Epoch = %d' % epoch, transform=ax.transAxes, fontdict={'size': 10, 'color':  'red'})
+        ax.text(0.75, 0.12, 'Loss = %.4f' % loss.data.numpy(), transform=ax.transAxes, fontdict={'size': 10, 'color':  'red'})
 
         # Used to return the plot as an image array 
         # (https://ndres.me/post/matplotlib-animated-gifs-easily/)

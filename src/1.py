@@ -2,6 +2,7 @@
 #pytorch study
 import numpy as np
 import torch
+import torch.nn as nn
 
 def test():
     x = torch.tensor([3,5]) #torch.tensor([4],dtype=torch.float)
@@ -14,7 +15,18 @@ def test():
     print(y.shape,y)
     
     y = y.view([3,2]) #reshape
-    print(y.shape,y)
+    print(y.shape, y, y.dtype)
+   
+def testNN():
+    #model = nn.Linear(1, 1)
+    #x = torch.tensor([3.0]) #torch.tensor([4],dtype=torch.float)
+    
+    #model = nn.Linear(2, 5)
+    model = nn.Linear(2, 1)
+    x = torch.tensor([1.0, 3.0])
+
+    pred = model(x)
+    print(pred)
     
 def numpyBP0():
     # N is batch size; D_in is input dimension;
@@ -165,7 +177,8 @@ def torchBP():
         w2 -= learning_rate * grad_w2
     
 def main():
-    test()
+    #test()
+    testNN()
     #numpyBP0()
     #numpyBP0_1()
     #numpyBP1()
