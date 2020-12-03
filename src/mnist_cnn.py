@@ -3,7 +3,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import time
+import os, time
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 from plotConfusionMatrix import plot_confusion_matrix
@@ -11,7 +11,7 @@ from plotConfusionMatrix import plot_confusion_matrix
 from commonTorch import ClassifierNet, ClassifierCNN_Net
 from commonTorch import ClassifierCNN_Net2, ClassifierCNN_Net3
 from commonTorch import optimizerTorch,optimizerDesc
-from mnist_fc import prepareData,saveModel,writeLog
+from mnist_fc import prepareData,saveModel,writeLog,load_model
    
 def accuracy(net,dataset):
     correct = 0
@@ -25,8 +25,22 @@ def accuracy(net,dataset):
                     #correct += 1
                 correct = correct + int(torch.argmax(i) == y[idx])
                 total += 1
-    print('Accuracy1: ', round(correct/total,3))
+    return correct/total
 
+def accuracy2(net, train):
+    train.data = train.data.view(-1, 1, 28, 28)
+    train.data = train.data.type(torch.FloatTensor)
+    print('train.data.shape=', train.data.shape, train.data.dtype)
+    print('train.targets.shape=', train.targets.shape, train.targets.dtype)
+    preds = net(train.data.view(-1, 1, 28, 28))
+    
+    print('preds.shape=', preds.shape)
+    preds_correct = get_num_correct(preds, train.targets)
+    print('total correct:', preds_correct)
+    acc = preds_correct / len(preds)
+    #print('accuracy:', acc)
+    return acc,preds
+    
 def get_num_correct(preds, labels):
     return preds.argmax(dim=1).eq(labels).sum().item()
          
@@ -40,12 +54,17 @@ def get_all_preds(net, dataset):
         return all_preds
     
 def evaluateModel(net,trainset,train):
-    accuracy(net,trainset)
-    preds = get_all_preds(net, trainset)
-    print('preds.shape=', preds.shape)
-    preds_correct = get_num_correct(preds, train.targets)
-    print('total correct:', preds_correct)
-    print('accuracy:', preds_correct / len(preds))
+    #acc = accuracy(net,trainset)
+    acc,preds = accuracy2(net, train)
+    print('Accuracy1:', round(acc,3))
+    
+    # #preds = get_all_preds(net, trainset)
+    # preds = net(train)
+    
+    # print('preds.shape=', preds.shape)
+    # preds_correct = get_num_correct(preds, train.targets)
+    # print('total correct:', preds_correct)
+    # print('accuracy:', preds_correct / len(preds))
     
     #confusion matrix
     # stacked = torch.stack((train.targets, preds.argmax(dim=1)), dim=1)
@@ -63,39 +82,66 @@ def plotLoss(loss,name='Loss'):
     plt.plot(loss)
     plt.show()  
     
+def plotLossAndAcc(loss,acc,name='Loss & Accuracy'):
+    plt.title(name)
+    plt.plot(loss, label='Loss')
+    plt.plot(acc, label='Accuracy')
+    plt.legend()
+    plt.tight_layout()
+    #plt.ylabel('Epoch')
+    plt.xlabel('Epoch')
+    plt.savefig(r'./res/loss.png')
+    plt.show()
+    
 def main():
-    trainset,testset,train,test = prepareData(batch_size=10)
+    trainset,testset,train,test = prepareData(batch_size=20000)
+    
+    curEpoch,curLoss = 0,0
+    weightsDir = r'./res/weights/'
     #net = ClassifierNet(input=28*28, output=10, hidden=20) #Fc
     #net = ClassifierCNN_Net(10) #cnn
     #net = ClassifierCNN_Net2(10) #Sequential cnn
     net = ClassifierCNN_Net3(10)
-    print(net)
+    optimizer = optimizerTorch(net.parameters(), lr=1e-3)
+    lossFuc = nn.CrossEntropyLoss() #nn.NLLLoss
     
-    optimizer = optimizerTorch(net.parameters(), lr=1e-6)
-    EPOCHS = 10
+    if 0:#continue training    
+        net,optimizer,curEpoch,curLoss = load_model(net, optimizer, weightsDir)
+        #net.eval()
+        #net.train()
+    
+    print(net)    
+    
+    EPOCHS = 50
     #optimizerDesc(optimizer)
 
     print('training start...')
-    losses = []
+    losse_list = []
+    acc_list=[]
     for epoch in range(EPOCHS):
         t = time.time()
         for data in trainset:
             X, y = data
-            # print('X.shape=',X.shape)
-            # print('y.shape=',y.shape)
+            #print('X.shape=',X.shape, X.dtype)
+            #print('y.shape=',y.shape, y.dtype)
             net.zero_grad()
             output = net(X)
-            loss = F.cross_entropy(output, y)
+            loss = lossFuc(output, y)
             loss.backward()
             optimizer.step()
-            losses.append(float(loss))
             
-        log= f'epoch[{epoch+1}/{EPOCHS}] loss={round(float(loss),4)},run in {round(time.time()-t,4)}s'
+        epoch = curEpoch + epoch
+        #acc,_ = accuracy2(net,train)
+        acc = accuracy(net,trainset)
+        acc_list.append(acc)
+        losse_list.append(float(loss))   
+         
+        log = f'epoch[{epoch+1-curEpoch}/{EPOCHS}][total:{epoch+1}], loss={round(float(loss),4)}, run in {round(time.time()-t,4)}s'
         print(log)
-        #writeLog(log + '\n')
+        writeLog(log + '\n')
             
-    #saveModel(net,optimizer,epoch,loss,r'./res/')
-    plotLoss(losses)
+    saveModel(net, optimizer, epoch, loss, weightsDir)
+    plotLossAndAcc(losse_list, acc_list)
     evaluateModel(net, trainset, train)
     
    

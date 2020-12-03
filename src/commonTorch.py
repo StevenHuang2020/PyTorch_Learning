@@ -310,20 +310,23 @@ class ClassifierCNN_Net3(nn.Module):
         super(ClassifierCNN_Net3, self).__init__()
         
         self.net = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3),
-            nn.BatchNorm2d(32),
+            nn.Conv2d(in_channels=1, out_channels=8, kernel_size=3),
+            nn.Dropout(0.5),
+            nn.BatchNorm2d(8),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=3, stride=2),
             
-            nn.Conv2d(32, 64, kernel_size=3),
-            nn.BatchNorm2d(64),
+            nn.Conv2d(8, 16, kernel_size=3),
+            nn.BatchNorm2d(16),
             nn.ReLU(inplace=True),
             nn.MaxPool2d(3, 2),
             
             nn.Flatten(),
-            nn.Linear(in_features=4*4*64,  out_features=256),
-            nn.Linear(in_features=256, out_features=output),
-            nn.Softmax(dim=1))
+            nn.Dropout(0.2),
+            nn.Linear(in_features=4*4*16,  out_features=64),
+            nn.Linear(in_features=64, out_features=output),
+            #nn.Softmax(dim=1),
+            nn.LogSoftmax(dim=1))
 
     def forward(self, x):
         return self.net(x)

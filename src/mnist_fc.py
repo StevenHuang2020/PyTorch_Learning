@@ -50,10 +50,11 @@ def prepareData(batch_size=10):
     test = datasets.MNIST(r"./res/", train=False,
                         transform=transforms.Compose([transforms.ToTensor()]))
 
-    trainset = torch.utils.data.DataLoader(train,batch_size=batch_size,shuffle=True)
-    testset = torch.utils.data.DataLoader(test,batch_size=batch_size,shuffle=True)
+    trainset = torch.utils.data.DataLoader(train,batch_size=batch_size,shuffle=True, num_workers=4)
+    testset = torch.utils.data.DataLoader(test,batch_size=batch_size,shuffle=True, num_workers=4)
 
     print(type(train), train)
+    print('train.data=', train.data.shape, train.data.dtype)
     print('train.targets=', train.targets)
     #print(type(test),test)
     print(type(trainset),trainset)
@@ -100,32 +101,52 @@ def accuracy(net,dataset):
     print('Accuracy: ', round(correct/total,3))
 
 def saveModel(net, optimizer, epoch, loss, save_dir):
-        if not os.path.exists(save_dir):
-                os.makedirs(save_dir)
-                
-        net_path = os.path.join(save_dir, 'train_e%d.pth' % epoch)
+    if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+            
+    net_path = os.path.join(save_dir, 'train_e%d.pth' % epoch)
+    
+    #print('dict=',self.net.state_dict())
+    # for key in self.net.state_dict():
+    #     print('key=', key)
+    
+    torch.save({
+    'epoch': epoch+1,
+    'model_state_dict': net.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+    'loss': loss,
+    }, net_path)
+    
+    #torch.save(self.net.state_dict(), net_path)
+     
+def load_model(net, optimizer, weightsDir):   
+    def getNewestModelCheckpoint(result_dir):
+        lists = os.listdir(result_dir)
+        lists.sort(key=lambda fn: os.path.getmtime(result_dir + fn))
+        file = os.path.join(result_dir, lists[-1])
+        return file
+    
+    modelFile = getNewestModelCheckpoint(weightsDir)
+    print('Continue training start, last weights file:', modelFile)
+    checkpoint = torch.load(modelFile)
+    #for key in checkpoint:
+        #print('key=',key)
         
-        #print('dict=',self.net.state_dict())
-        # for key in self.net.state_dict():
-        #     print('key=', key)
-        
-        torch.save({
-        'epoch': epoch+1,
-        'model_state_dict': net.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict(),
-        'loss': loss,
-        }, net_path)
-        
-        #torch.save(self.net.state_dict(), net_path)
-        
+    net.load_state_dict(state_dict=checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    curEpoch = checkpoint['epoch']
+    loss = checkpoint['loss']
+    print('current already epochs:', curEpoch,',Loss:', loss)
+    return net,optimizer,curEpoch,loss
+           
 def writeLog(log):
-        logFile=r'log'
-        if not os.path.exists(logFile):
-            os.makedirs(logFile)
-        
-        logFile=logFile + '/' + 'log.txt'
-        with open(logFile,'a',newline='\n') as dstF:
-            dstF.write(log)
+    logFile=r'log'
+    if not os.path.exists(logFile):
+        os.makedirs(logFile)
+    
+    logFile=logFile + '/' + 'log.txt'
+    with open(logFile,'a',newline='\n') as dstF:
+        dstF.write(log)
                
 def main():
     #testLayers()
