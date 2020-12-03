@@ -53,13 +53,14 @@ def prepareData(batch_size=10):
     trainset = torch.utils.data.DataLoader(train,batch_size=batch_size,shuffle=True)
     testset = torch.utils.data.DataLoader(test,batch_size=batch_size,shuffle=True)
 
-    #print(type(train),train)
+    print(type(train), train)
+    print('train.targets=', train.targets)
     #print(type(test),test)
-    # print(type(trainset),trainset)
+    print(type(trainset),trainset)
     # print(type(testset),testset)
     
     #descpritDataset(trainset)
-    return trainset,testset
+    return trainset,testset,train,test
 
 class Net(nn.Module):
     def __init__(self):
@@ -128,7 +129,7 @@ def writeLog(log):
                
 def main():
     #testLayers()
-    trainset,testset = prepareData(batch_size=10)
+    trainset,testset,_,_ = prepareData(batch_size=10)
     
     #net = Net() 
     net = ClassifierNet(input=28*28, output=10, hidden=20)

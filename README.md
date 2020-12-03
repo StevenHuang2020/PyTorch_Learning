@@ -8,6 +8,12 @@ PyTorch learning.
  - DOC: https://pytorch.org/docs/stable/index.html
  - Neural Layers: https://pytorch.org/docs/stable/nn.html
  
+## Regression Result
 |||
 |---|---|
 |<img src="images/curve0.gif" width="320" height="240" />|<img src="images/curve1.gif" width="320" height="240" />|
+
+## MNIST Classification Result
+|||
+|---|---|
+|<img src="images/loss.png" width="320" height="240" />|<img src="images/cm.png" width="320" height="240" />|
