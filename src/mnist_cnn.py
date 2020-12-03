@@ -86,10 +86,12 @@ def plotLossAndAcc(loss,acc,name='Loss & Accuracy'):
     plt.title(name)
     plt.plot(loss, label='Loss')
     plt.plot(acc, label='Accuracy')
+    plt.hlines(y=1,xmin=0, xmax=50,colors='g', linestyles='dashed')
     plt.legend()
     plt.tight_layout()
     #plt.ylabel('Epoch')
     plt.xlabel('Epoch')
+    plt.subplots_adjust(left=None, bottom=0.1, right=None, top=None, wspace=None, hspace=None)
     plt.savefig(r'./res/loss.png')
     plt.show()
     
@@ -112,7 +114,7 @@ def main():
     
     print(net)    
     
-    EPOCHS = 50
+    EPOCHS = 2#50
     #optimizerDesc(optimizer)
 
     print('training start...')
