@@ -50,8 +50,8 @@ def prepareData(batch_size=10):
     test = datasets.MNIST(r"./res/", train=False,
                         transform=transforms.Compose([transforms.ToTensor()]))
 
-    trainset = torch.utils.data.DataLoader(train,batch_size=batch_size,shuffle=True, num_workers=4)
-    testset = torch.utils.data.DataLoader(test,batch_size=batch_size,shuffle=True, num_workers=4)
+    trainset = torch.utils.data.DataLoader(train,batch_size=batch_size,shuffle=True, num_workers=0)
+    testset = torch.utils.data.DataLoader(test,batch_size=batch_size,shuffle=True, num_workers=0)
 
     print(type(train), train)
     print('train.data=', train.data.shape, train.data.dtype)
@@ -139,12 +139,11 @@ def load_model(net, optimizer, weightsDir):
     print('current already epochs:', curEpoch,',Loss:', loss)
     return net,optimizer,curEpoch,loss
            
-def writeLog(log):
-    logFile=r'log'
-    if not os.path.exists(logFile):
+def writeLog(log, dstDir=r'./log/'):
+    if not os.path.exists(dstDir):
         os.makedirs(logFile)
     
-    logFile=logFile + '/' + 'log.txt'
+    logFile = dstDir + 'log.txt'
     with open(logFile,'a',newline='\n') as dstF:
         dstF.write(log)
                

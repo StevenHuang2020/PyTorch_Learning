@@ -12,7 +12,8 @@ from commonTorch import ClassifierNet, ClassifierCNN_Net
 from commonTorch import ClassifierCNN_Net2, ClassifierCNN_Net3
 from commonTorch import optimizerTorch,optimizerDesc
 from mnist_fc import prepareData,saveModel,writeLog,load_model
-   
+from plotLoss import plotLossAndAcc,plotFromLog
+
 def accuracy(net,dataset):
     correct = 0
     total = 0
@@ -58,14 +59,6 @@ def evaluateModel(net,trainset,train):
     acc,preds = accuracy2(net, train)
     print('Accuracy1:', round(acc,3))
     
-    # #preds = get_all_preds(net, trainset)
-    # preds = net(train)
-    
-    # print('preds.shape=', preds.shape)
-    # preds_correct = get_num_correct(preds, train.targets)
-    # print('total correct:', preds_correct)
-    # print('accuracy:', preds_correct / len(preds))
-    
     #confusion matrix
     # stacked = torch.stack((train.targets, preds.argmax(dim=1)), dim=1)
     # cmt = torch.zeros(10,10, dtype=torch.int64)
@@ -77,24 +70,6 @@ def evaluateModel(net,trainset,train):
     cmt = confusion_matrix(train.targets, preds.argmax(dim=1))
     plot_confusion_matrix(cmt, train.classes)
   
-def plotLoss(loss,name='Loss'):
-    plt.title(name)
-    plt.plot(loss)
-    plt.show()  
-    
-def plotLossAndAcc(loss,acc,name='Loss & Accuracy'):
-    plt.title(name)
-    plt.plot(loss, label='Loss')
-    plt.plot(acc, label='Accuracy')
-    plt.hlines(y=1,xmin=0, xmax=50,colors='g', linestyles='dashed')
-    plt.legend()
-    plt.tight_layout()
-    #plt.ylabel('Epoch')
-    plt.xlabel('Epoch')
-    plt.subplots_adjust(left=None, bottom=0.1, right=None, top=None, wspace=None, hspace=None)
-    plt.savefig(r'./res/loss.png')
-    plt.show()
-    
 def main():
     trainset,testset,train,test = prepareData(batch_size=20000)
     
@@ -107,19 +82,16 @@ def main():
     optimizer = optimizerTorch(net.parameters(), lr=1e-3)
     lossFuc = nn.CrossEntropyLoss() #nn.NLLLoss
     
-    if 0:#continue training    
+    if 1:#continue training    
         net,optimizer,curEpoch,curLoss = load_model(net, optimizer, weightsDir)
-        #net.eval()
-        #net.train()
-    
+
     print(net)    
-    
-    EPOCHS = 2#50
-    #optimizerDesc(optimizer)
 
     print('training start...')
     losse_list = []
     acc_list=[]
+    EPOCHS = 30
+    #optimizerDesc(optimizer)
     for epoch in range(EPOCHS):
         t = time.time()
         for data in trainset:
@@ -135,17 +107,17 @@ def main():
         epoch = curEpoch + epoch
         #acc,_ = accuracy2(net,train)
         acc = accuracy(net,trainset)
-        acc_list.append(acc)
+        acc_list.append(round(acc,4))
         losse_list.append(float(loss))   
-         
-        log = f'epoch[{epoch+1-curEpoch}/{EPOCHS}][total:{epoch+1}], loss={round(float(loss),4)}, run in {round(time.time()-t,4)}s'
+        
+        log = f'epoch[{epoch+1-curEpoch}/{EPOCHS}][total:{epoch+1}], loss={round(float(loss),4)}, accuracy={round(acc,4)}, run in {round(time.time()-t,4)}s'
         print(log)
         writeLog(log + '\n')
             
     saveModel(net, optimizer, epoch, loss, weightsDir)
-    plotLossAndAcc(losse_list, acc_list)
+    #plotLossAndAcc(losse_list, acc_list)
+    plotFromLog(r'./log/log.txt')
     evaluateModel(net, trainset, train)
     
-   
 if __name__ == '__main__':
     main()

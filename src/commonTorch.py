@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from backbones import *
 
 def preparDataSet(N=200, gamma=0.01): #1 feature(variable) dataset
     """N: number of samples needed
@@ -117,7 +118,6 @@ def optimizerTorch(parameters, lr=1e-3):
     #optimizer = optim.SGD(parameters, lr=lr)
     #optimizer = optim.Adadelta(parameters, lr=lr)
     #optimizer = optim.Adagrad(parameters, lr=lr)
-    #optimizer = optim.Adadelta(parameters, lr=lr)
     #optimizer = optim.AdamW(parameters, lr=lr)
     #optimizer = optim.SparseAdam(parameters, lr=lr)
     #optimizer = optim.ASGD(parameters, lr=lr)
@@ -163,7 +163,7 @@ class RegressionNet(nn.Module):
      
         #self.activeFun = None #linear model when not settting active function
         self.activeFun = F.elu #F.hardtanh #F.leaky_relu #F.relu #F.softsign #F.tanh   
-        #print('activeFun=',self.activeFun)
+        self.apply(self.weight_init) #customize weights initializer
         
     def forward(self, x):
         if self.activeFun:
@@ -177,6 +177,19 @@ class RegressionNet(nn.Module):
             x = self.fc3(x)
         return x
     
+    @torch.no_grad()
+    def weight_init(self, m):
+        #setting fixed parameters for compare optimizer
+        #print('m=', m, 'className=', m.__class__.__name__)
+        if type(m) == nn.Linear:
+            m.weight.fill_(1.0)
+            m.bias.fill_(1.0)
+            #print('weight=', m.weight)
+            #print('bias=', m.bias)
+        else:
+            #print('no linear m=', type(m), m)
+            pass
+                        
 class RegressionNet2(nn.Module):
     def __init__(self, input=1, output=1, hidden=5, hiddenlayers=1):
         """Regression NN Model, multi-layers.
@@ -330,3 +343,29 @@ class ClassifierCNN_Net3(nn.Module):
 
     def forward(self, x):
         return self.net(x)
+
+class ClassifierCNN_NetBB(nn.Module):
+    def __init__(self, output=2, backbone=vgg16):
+        """Sequential CNN classifier model.
+        output: class numbers
+        """
+        super(ClassifierCNN_NetBB, self).__init__()
+        
+        self.net = backbone
+        self.out = nn.Sequential(
+            nn.Dropout(0.2),
+            nn.Linear(in_features=1000,  out_features=256),
+            nn.ReLU(inplace=True),
+            nn.Linear(256, 128),
+            nn.ReLU(inplace=True),
+            nn.Linear(128, out_features=output),
+            #nn.LogSoftmax(dim=1)
+            nn.Softmax(dim=1)
+            )
+        
+    def forward(self, x):
+        x = self.net(x)
+        x = self.out(x)
+        return x
+    
+#AdaptiveAvgPool2d

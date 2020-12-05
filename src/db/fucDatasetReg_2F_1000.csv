@@ -1,0 +1,2 @@
+#regression dataset two feature linear
+#y = 2.2*x1 + 0.8*x2 + 1.2 + noise*0.01

@@ -4,6 +4,34 @@ import numpy as np
 import torch
 import torch.nn as nn
 
+def testReshape():
+    def flatten(t):
+        t = t.reshape(1, -1)
+        t = t.squeeze()
+        return t
+
+    t = torch.tensor([
+        [1,1,1,1],
+        [2,2,2,2],
+        [3,3,3,3]
+    ], dtype=torch.float32)
+    print(t.size()) #torch.Size([3, 4])
+    print(t.shape)  #torch.Size([3, 4])
+    print(torch.tensor(t.shape).prod()) #tensor(12)
+    print(t.numel()) #12
+    print(t.reshape([1,12]))
+    print(t.reshape([1,12]).shape)#torch.Size([1, 12])
+    
+    print('-----')
+    print(t.reshape([1,12]).squeeze())
+    print(t.reshape([1,12]).squeeze().shape) #torch.Size([12])
+    print(t.reshape([12,1]).squeeze())
+    print(t.reshape([12,1]).squeeze().shape) #torch.Size([12])
+    
+    t = flatten(t)
+    print(t, t.shape)
+    #tensor([1., 1., 1., 1., 2., 2., 2., 2., 3., 3., 3., 3.]) torch.Size([12])
+    
 def test():
     x = torch.tensor([3,5]) #torch.tensor([4],dtype=torch.float)
     y = torch.tensor([2,1])
@@ -178,7 +206,9 @@ def torchBP():
     
 def main():
     #test()
-    testNN()
+    #testNN()
+    testReshape()
+    
     #numpyBP0()
     #numpyBP0_1()
     #numpyBP1()
