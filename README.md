@@ -32,3 +32,22 @@ The Binary Cross Entropy(BCELoss):<br/>
  
 The Kullback-Leibler divergence loss(KLDivLoss):<br/>
 <img src="https://latex.codecogs.com/svg.latex?\begin{equation}%20\begin{array}{l}%20\ell(x,y)=L=\left\{l_1,...,l_N%20%20\right\}^\top,%20l_n=y_n\cdot(\log{y_n}-x_n)\\%20\ell(x,y)=%20\begin{cases}%20mean(L),&%20\text{if%20reduction=%27mean%27;}\\%20sum(L),&%20\text{if%20reduction=%27sum%27;}%20\end{cases}%20\end{array}%20\end{equation}"/>
+
+## Output size calculation
+ - Convolutional Layer <br/> 
+ <img src="https://latex.codecogs.com/svg.latex?O=\frac{W%20-%20F%20+%202P}{S}+1" /> ,where W=Input image size, F=kernel size, P=padding, S=stride
+ - Pooling Layer  <br/>
+ Same as the Convolutional Layer
+ 
+## Parameter numbers calculation
+ - Input layer  <br/>
+  <img src="https://latex.codecogs.com/svg.latex?parameters%20=%200" /> <br/>
+ - Fully Connected Layer (FC)  <br/>
+  <img src="https://latex.codecogs.com/svg.latex?((c%20*%20p)%20+%201*c)" /> <br/>
+  <img src="https://latex.codecogs.com/svg.latex?c*p" />: weights, <img src="https://latex.codecogs.com/svg.latex?1*c" />: bias iterm.
+  c: current layer neurons, p: previous layer neurons.<br/>
+ - Convolutional Layer  <br/>
+ <img src="https://latex.codecogs.com/svg.latex?((m%20*%20n%20*%20d)+1)*%20k)" /> <br/>
+ m: width of the filter, n: height of the filter, d: input filter numbers, k: ouptut filter numbers. <br/>
+ - Pooling Layer  <br/>
+ <img src="https://latex.codecogs.com/svg.latex?parameters%20=%200" /> <br/>
