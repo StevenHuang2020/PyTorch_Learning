@@ -47,7 +47,7 @@ PyTorch learning.
   <img src="https://latex.codecogs.com/svg.latex?c*p" />: weights, <img src="https://latex.codecogs.com/svg.latex?1*c" />: bias iterm.
   c: current layer neurons, p: previous layer neurons.<br/>
  - Convolutional Layer  <br/>
- <img src="https://latex.codecogs.com/svg.latex?parameters=((m%20*%20n%20*%20d)+1)*%20k)" /> <br/>
+ <img src="https://latex.codecogs.com/svg.latex?parameters=((m%20*%20n%20*%20d)+1)*%20k" /> <br/>
  m: width of the filter, n: height of the filter, d: input filter numbers, k: ouptut filter numbers. <br/>
  - Pooling Layer  <br/>
  <img src="https://latex.codecogs.com/svg.latex?parameters%20=%200" /> <br/>
