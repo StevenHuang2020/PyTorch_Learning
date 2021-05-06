@@ -42,8 +42,8 @@ def createModel():
     print(model)
     return x, model,name
 
-def visualModel(model,input,file,format='pdf',view=False):
-    dot = make_dot(model(input), params=dict(list(model.named_parameters())), show_attrs=True, show_saved=True)
+def visualModel(model,params,file,format='pdf',view=False):
+    dot = make_dot(model, params=params, show_attrs=True, show_saved=True)
     dot.format = format #'pdf' #'png' #
     print('format=', dot._format)
     dot.render(filename=file, view=view)
@@ -52,14 +52,15 @@ def visualModel(model,input,file,format='pdf',view=False):
     out = head + '\\' + tail+'.png'
     cmd = 'dot -Tpng -Gdpi=300 ' + file + ' -o ' + out
     print('file,head,tail=', file, head, tail, 'cmd=',cmd)
-    
     #os.system('dot -Tpng random.dot -o random.png')
     os.system(cmd)
     
 def testViz():
     x, model,name = createModel()
     print(x.shape)
-    visualModel(model,x,file=r'.\res'+'\\'+name,view=False)
+    
+    params=dict(list(model.named_parameters()))
+    visualModel(model(x), params, file=r'.\res'+'\\'+name, view=True)
     
     # #final color descrption in function make_dot
     # dot = make_dot(y, params=dict(list(model.named_parameters())), show_attrs=True, show_saved=True)
