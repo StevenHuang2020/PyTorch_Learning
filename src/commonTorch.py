@@ -7,6 +7,11 @@ import torch.nn.functional as F
 import torch.optim as optim
 from backbones import *
 
+#PyTorch reference
+#Active functions: https://pytorch.org/docs/stable/nn.functional.html
+#Optimizer: https://pytorch.org/docs/stable/optim.html
+#Loss functions: https://pytorch.org/docs/stable/nn.html#loss-functions
+
 def preparDataSet(N=200, gamma=0.01): #1 feature(variable) dataset
     """N: number of samples needed
     gamma: Noise coefficient

@@ -204,10 +204,48 @@ def torchBP():
         w1 -= learning_rate * grad_w1
         w2 -= learning_rate * grad_w2
     
+def testGradient():
+    #x = torch.randn(4, requires_grad=True)
+    x = torch.tensor([1,2], dtype=float, requires_grad=True)
+    print('x=', x)
+    #y = (x+2)*x
+    
+    y = x*x
+    y = y.mean()
+    print('y=', y)
+    
+    y.backward()
+    print('x grad=', x.grad)
+
+def testGradient1():
+    #x = torch.randn(4, requires_grad=True)
+    x = torch.tensor([-10,20], dtype=float, requires_grad=True)
+    print('x=', x)
+    #y = (x+2)*x
+    
+    lr=0.1
+    for i in range(50):
+        y = x*x
+        y = y.mean()
+        #print(i, 'y=', y)
+    
+        y.backward()
+        grad = x.grad.numpy()
+        print(i, ',x=', x, ',y=', y, ', x grad=', x.grad, grad)
+        #x = x - torch.tensor(lr*grad)
+        #print('x=', x)
+        ag,bg = grad[0],grad[1]
+        a,b = float(x.detach()[0]), float(x.detach()[1])
+        #print(ag,bg,a,b)
+        x = torch.tensor([a-lr*ag, b- lr*bg], dtype=float, requires_grad=True)
+        #x.grad.zero_()
+        
 def main():
     #test()
     #testNN()
-    testReshape()
+    #testReshape()
+    #testGradient()
+    testGradient1()
     
     #numpyBP0()
     #numpyBP0_1()

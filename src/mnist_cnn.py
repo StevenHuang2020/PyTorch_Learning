@@ -86,6 +86,7 @@ def main():
         net,optimizer,curEpoch,curLoss = load_model(net, optimizer, weightsDir)
 
     print(net)    
+    #return 
 
     print('training start...')
     losse_list = []
@@ -112,7 +113,7 @@ def main():
         
         log = f'epoch[{epoch+1-curEpoch}/{EPOCHS}][total:{epoch+1}], loss={round(float(loss),4)}, accuracy={round(acc,4)}, run in {round(time.time()-t,4)}s'
         print(log)
-        writeLog(log + '\n')
+ 
             
     saveModel(net, optimizer, epoch, loss, weightsDir)
     #plotLossAndAcc(losse_list, acc_list)
