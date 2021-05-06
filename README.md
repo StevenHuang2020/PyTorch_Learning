@@ -58,5 +58,5 @@ Print pytorch model to png/pdf, require torchviz package.<br/>
 1)Install Graphviz, the installation package can be found [here.](http://www.graphviz.org/download/#windows)<br/>
 2)pip install torchviz <br/>
 <br/>
-<img src="images/RegressionNet.png" width="320" height="240" />
+<img src="images/RegressionNet.dot.png" width="320" height="240" />
 <img src="images/ClassifierCNN_Net3.dot.png" width="320" height="240" />
